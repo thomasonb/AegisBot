@@ -265,11 +265,6 @@ namespace AegisBot.Implementations
                 IAegisService applicationService = ServiceFactory.GetService<ApplicationService>();
                 await applicationService.RunCommand(e, "!apply");
             };
-
-            //Client.ExecuteAndWait(async () =>
-            //{
-            //    await Client.Connect("MjgyMzQzODYxODEwODg4NzA1.C46kJQ.kvwdzGMb2PXDrOb1AEcs7vZFV1M", TokenType.Bot);
-            //});
         }
 
         private async Task<Message> StartCommand(string message, User user)
