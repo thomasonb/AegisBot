@@ -27,6 +27,7 @@ namespace AegisBot
 
         public void LoadServices(DiscordClient client)
         {
+            ServiceFactory.LoadService<ManagerService>(client);
             ServiceFactory.LoadService<ApplicationService>(client);
             ServiceFactory.LoadService<EchoService>(client);
         }

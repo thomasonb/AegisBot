@@ -14,6 +14,7 @@ namespace AegisBot.Implementations
         public abstract List<string> CommandList { get; set; }
         public abstract string CommandDelimiter { get; set; }
         public abstract DiscordClient Client { get; set; }
+        public abstract List<UInt64> Channels { get; set; }
 
         public bool ContainsCommand(string message)
         {

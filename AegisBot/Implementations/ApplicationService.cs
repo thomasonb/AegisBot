@@ -14,10 +14,11 @@ using Newtonsoft.Json;
 
 namespace AegisBot.Implementations
 {
-    public class ApplicationService : AegisService, IAegisService
+    public class ApplicationService : AegisService
     {
         public override List<string> CommandList { get; set; }
         public override string CommandDelimiter { get; set; }
+        public override List<UInt64> Channels { get; set; }
         public override DiscordClient Client { get; set; }
         private static string saveDir = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.Parent?.Parent?.FullName + "\\Applications";
 
@@ -213,49 +214,52 @@ namespace AegisBot.Implementations
         {
             Client.MessageReceived += async (s, e) =>
             {
-                //does this channel and user correspond to any applications?
-                Application app =
-                    GetApplicationsForChannel(e.Channel.Id, Application.State.Any)
-                        .FirstOrDefault(x => x.UserID == e.User.Id);
-                if (!e.Message.IsAuthor && e.Channel.IsPrivate && app != null)
+                if (Channels.Contains(e.Channel.Id))
                 {
-
-                    //string command = e.Message.Text.Substring(0, e.Message.Text.Contains(" ") ? e.Message.Text.IndexOf(" ") : e.Message.Text.Length);
-                    List<IAegisService> services = ServiceFactory.Services;
-
-                    //is the user trying to run a command?
-                    if (ContainsCommand(e.Message.Text))
+                    //does this channel and user correspond to any applications?
+                    Application app =
+                        GetApplicationsForChannel(e.Channel.Id, Application.State.Any)
+                            .FirstOrDefault(x => x.UserID == e.User.Id);
+                    if (!e.Message.IsAuthor && e.Channel.IsPrivate && app != null)
                     {
-                        await RunCommand(e);
-                    }
-                    //the user might be answering a question
-                    else
-                    {
-                        //if the app is in progress the user is probably answering a question
-                        if (app.CurrentState == Application.State.InProgress || app.CurrentState == Application.State.Change)
+
+                        //string command = e.Message.Text.Substring(0, e.Message.Text.Contains(" ") ? e.Message.Text.IndexOf(" ") : e.Message.Text.Length);
+                        List<IAegisService> services = ServiceFactory.Services;
+
+                        //is the user trying to run a command?
+                        if (ContainsCommand(e.Message.Text))
                         {
-                            await app.AnswerQuestion(app.CurrentQuestionID + 1, e.Message.Text);
-                            IAegisService applicationService = ServiceFactory.GetService<ApplicationService>();
+                            await RunCommand(e);
+                        }
+                        //the user might be answering a question
+                        else
+                        {
+                            //if the app is in progress the user is probably answering a question
+                            if (app.CurrentState == Application.State.InProgress || app.CurrentState == Application.State.Change)
+                            {
+                                await app.AnswerQuestion(app.CurrentQuestionID + 1, e.Message.Text);
+                                IAegisService applicationService = ServiceFactory.GetService<ApplicationService>();
 
-                            //if the app is in a finished state let the user review the app and make any necessary changes
-                            if (app.CurrentState == Application.State.Finished)
-                            {
-                                await RunCommand(new UserEventArgs(e.User), "!review");
-                            }
-                            //otherwise ask the next question
-                            else
-                            {
-                                await RunCommand(new UserEventArgs(e.User), "!next");
+                                //if the app is in a finished state let the user review the app and make any necessary changes
+                                if (app.CurrentState == Application.State.Finished)
+                                {
+                                    await RunCommand(new UserEventArgs(e.User), "!review");
+                                }
+                                //otherwise ask the next question
+                                else
+                                {
+                                    await RunCommand(new UserEventArgs(e.User), "!next");
+                                }
                             }
                         }
                     }
-                }
-                //are there any services that have a command corresponding to this one
-                else if (!e.Message.IsAuthor)
-                {
-                    if (ContainsCommand(e.Message.Text))
+                    //are there any services that have a command corresponding to this one
+                    else if (!e.Message.IsAuthor)
                     {
-                        await RunCommand(e);
+                        if (ContainsCommand(e.Message.Text))
+                        {
+                            await RunCommand(e);
+                        }
                     }
                 }
             };

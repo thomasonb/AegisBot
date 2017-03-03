@@ -22,6 +22,11 @@ namespace AegisBot.Implementations
             return Services.FirstOrDefault(x => x.GetType() == typeof (T));
         }
 
+        public static IAegisService GetService(string ServiceName)
+        {
+            return Services.FirstOrDefault(x => x.GetType().Name == ServiceName);
+        }
+
         public static void LoadService<T>(DiscordClient client) where T : IAegisService
         {
             Services.Add(Activator.CreateInstance<T>());
