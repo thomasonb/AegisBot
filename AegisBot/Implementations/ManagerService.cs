@@ -11,6 +11,7 @@ namespace AegisBot.Implementations
     {
         public override List<string> CommandList { get; set; } = new List<string>() { "addService" };
         public override string CommandDelimiter { get; set; } = ".";
+        public override List<UInt64> Channels { get; set; }
         public override DiscordClient Client { get; set; }
 
         public override void HandleEvents()
