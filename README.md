@@ -1,2 +1,2 @@
 # AegisBot
-DiscordBot I made for a friend
+Custom Discord bot I'm working on that is easily extended. Has the ability to add custom services with their own commands and moderation limitations. The services themselves should all inherit from AegisService (which in turn implements IAegisService). Doing this gives access to the helper functions I've included and allows for easy manipulation of services in channels. It also allows for easy parsing of the discord messages (pulling out the command itself and parameters). The services themselves handle all of the event code. The services can easily be disabled with a single commend in Program.cs or you can use the disable command in the ManagerService.
