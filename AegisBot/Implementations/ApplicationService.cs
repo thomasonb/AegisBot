@@ -20,6 +20,7 @@ namespace AegisBot.Implementations
         public override string CommandDelimiter { get; set; }
         public override List<UInt64> Channels { get; set; }
         public override DiscordClient Client { get; set; }
+        public override string HelpText { get; set; }
         private static string saveDir = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.Parent?.Parent?.FullName + "\\Applications";
 
         public ApplicationService()
@@ -196,12 +197,12 @@ namespace AegisBot.Implementations
             return Applications.FirstOrDefault(x => x.ApplicationID == applicationId);
         }
 
-        public override Task RunCommand(MessageEventArgs e)
+        public override Task<Message> RunCommand(MessageEventArgs e)
         {
             return StartCommand(e.Message.Text, e.User);
         }
 
-        public override Task RunCommand(UserEventArgs e, string command)
+        public override Task<Message> RunCommand(UserEventArgs e, string command)
         {
             if (ContainsCommand(command))
             {

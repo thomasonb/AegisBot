@@ -11,12 +11,10 @@ namespace AegisBot.Implementations
     class EchoService : AegisService
     {
         public override DiscordClient Client { get; set; }
-
         public override string CommandDelimiter { get; set; } = "!";
-
         public override List<UInt64> Channels { get; set; }
-
         public override List<string> CommandList { get; set; }
+        public override string HelpText { get; set; }
 
         public override void HandleEvents()
         {
@@ -33,13 +31,13 @@ namespace AegisBot.Implementations
             };
         }
 
-        public override Task RunCommand(MessageEventArgs e)
+        public override Task<Message> RunCommand(MessageEventArgs e)
         {
             var y = Client.Servers.First(x => x.Name == "myServer").TextChannels.First(x => x.Name == "closedchannel");
             return y.SendMessage(e.Message.Text);
         }
 
-        public override Task RunCommand(UserEventArgs e, string command)
+        public override Task<Message> RunCommand(UserEventArgs e, string command)
         {
             throw new NotImplementedException();
         }

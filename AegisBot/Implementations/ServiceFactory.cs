@@ -24,7 +24,7 @@ namespace AegisBot.Implementations
 
         public static IAegisService GetService(string ServiceName)
         {
-            return Services.FirstOrDefault(x => x.GetType().Name == ServiceName);
+            return Services.FirstOrDefault(x => x.GetType().Name.ToLower() == ServiceName.ToLower());
         }
 
         public static void LoadService<T>(DiscordClient client) where T : IAegisService

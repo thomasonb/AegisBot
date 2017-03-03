@@ -15,6 +15,7 @@ namespace AegisBot.Implementations
         public abstract string CommandDelimiter { get; set; }
         public abstract DiscordClient Client { get; set; }
         public abstract List<UInt64> Channels { get; set; }
+        public abstract string HelpText { get; set; }
 
         public bool ContainsCommand(string message)
         {
@@ -41,9 +42,9 @@ namespace AegisBot.Implementations
             return regex.Matches(message).Cast<Match>().Select(x => x.Value).ToList().Skip(1).ToList();
         }
 
-        public abstract Task RunCommand(MessageEventArgs e);
+        public abstract Task<Message> RunCommand(MessageEventArgs e);
 
-        public abstract Task RunCommand(UserEventArgs e, string command);
+        public abstract Task<Message> RunCommand(UserEventArgs e, string command);
 
         public abstract void HandleEvents();
     }
