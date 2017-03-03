@@ -10,7 +10,6 @@ namespace AegisBot.Implementations
 {
     class EchoService : AegisService, IAegisService
     {
-		//test
         public override DiscordClient Client { get; set; }
 
         public override string CommandDelimiter { get; set; } = "!";
