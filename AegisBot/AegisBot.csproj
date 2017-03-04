@@ -91,9 +91,13 @@
     <Compile Include="Implementations\AegisService.cs" />
     <Compile Include="Implementations\Application.cs" />
     <Compile Include="Implementations\ApplicationService.cs" />
+    <Compile Include="Implementations\ChannelInfo.cs" />
+    <Compile Include="Implementations\CommandInfo.cs" />
     <Compile Include="Implementations\EchoService.cs" />
     <Compile Include="Implementations\ManagerService.cs" />
+    <Compile Include="Implementations\ParameterInfo.cs" />
     <Compile Include="Implementations\QA.cs" />
+    <Compile Include="Implementations\RoleInfo.cs" />
     <Compile Include="Interfaces\IAegisService.cs" />
     <Compile Include="Implementations\ServiceFactory.cs" />
     <Compile Include="Program.cs" />

@@ -16,7 +16,7 @@ namespace AegisBot.Implementations
 {
     public class ApplicationService : AegisService
     {
-        public override List<string> CommandList { get; set; }
+        public override List<CommandInfo> CommandList { get; set; }
         public override string CommandDelimiter { get; set; }
         public override List<UInt64> Channels { get; set; }
         public override DiscordClient Client { get; set; }
@@ -26,7 +26,18 @@ namespace AegisBot.Implementations
         public ApplicationService()
         {
             CommandDelimiter = "!";
-            CommandList = new List<string> { "apply", "review", "change", "submit", "next", "begin", "approve", "deny", "investigate" };
+            CommandList = new List<CommandInfo>
+            {
+                new CommandInfo("apply"),
+                new CommandInfo("review"),
+                new CommandInfo("change") {Parameters = new List<ParameterInfo>() { new ParameterInfo() { ParameterIndex = 0, ParameterName = "QuestionID", IsRequired = true} } },
+                new CommandInfo("submit"),
+                new CommandInfo("next"),
+                new CommandInfo("begin"),
+                new CommandInfo("approve") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
+                new CommandInfo("deny") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
+                new CommandInfo("investigate") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } }
+            };
         }
 
         public async Task<Message> SendApplication(string message, User user)
@@ -276,28 +287,30 @@ namespace AegisBot.Implementations
         {
             Channel applicationChannel =
                 Client.Servers.First(x => x.Name == "myServer").TextChannels.First(x => x.Name == "applications");
-            string command = GetCommandFromMessage(message);
-            List<string> paramList = GetParametersFromMessage(message);
-            switch (command)
+            CommandInfo command = GetCommandFromMessage(message);
+            if (FillParameterValues(GetParametersFromMessage(message), command))
             {
-                case "apply":
-                    return await SendApplication(message, user);
-                case "next":
-                    return await AskNextQuestion(user, Application.State.InProgress);
-                case "begin":
-                    return await BeginApplication(user);
-                case "review":
-                    return await ReviewApplication(user);
-                case "change":
-                    return await ChangeQuestion(user, paramList[0]);
-                case "submit":
-                    return await SubmitApplication(user, applicationChannel);
-                case "approve":
-                    return await ApproveApplication(user, paramList[0], applicationChannel);
-                case "deny":
-                    return await DenyApplication(user, paramList[0], applicationChannel);
-                case "investigate":
-                    return await InvestigateApplication(user, paramList[0], applicationChannel);
+                switch (command.CommandName)
+                {
+                    case "apply":
+                        return await SendApplication(message, user);
+                    case "next":
+                        return await AskNextQuestion(user, Application.State.InProgress);
+                    case "begin":
+                        return await BeginApplication(user);
+                    case "review":
+                        return await ReviewApplication(user);
+                    case "change":
+                        return await ChangeQuestion(user, command.Parameters[0].ParameterValue);
+                    case "submit":
+                        return await SubmitApplication(user, applicationChannel);
+                    case "approve":
+                        return await ApproveApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                    case "deny":
+                        return await DenyApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                    case "investigate":
+                        return await InvestigateApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                }
             }
             return null;
         }

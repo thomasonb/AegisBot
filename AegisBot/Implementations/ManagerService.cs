@@ -10,11 +10,78 @@ namespace AegisBot.Implementations
 {
     class ManagerService : AegisService
     {
-        public override List<string> CommandList { get; set; } = new List<string>() { "addservice", "help" };
+        public override List<CommandInfo> CommandList { get; set; }
         public override string CommandDelimiter { get; set; } = ".";
         public override List<UInt64> Channels { get; set; }
         public override DiscordClient Client { get; set; }
         public override string HelpText { get; set; }
+
+        public ManagerService()
+        {
+            CommandList = new List<CommandInfo>()
+            {
+                new CommandInfo("addservice")
+                {
+                    Parameters = new List<ParameterInfo>()
+                    {
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 0,
+                            ParameterName = "ServiceName",
+                            IsRequired = true
+                        }
+                    }
+                },
+                new CommandInfo("serviceHelp")
+                {
+                    Parameters = new List<ParameterInfo>()
+                    {
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 0,
+                            ParameterName = "ServiceName",
+                            IsRequired = true
+                        }
+                    }
+                },
+                new CommandInfo("addcommand")
+                {
+                    Parameters = new List<ParameterInfo>()
+                    {
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 0,
+                            ParameterName = "ServiceName",
+                            IsRequired = true
+                        },
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 1,
+                            ParameterName = "CommandName",
+                            IsRequired = false
+                        }
+                    }
+                },
+                new CommandInfo("commandHelp")
+                {
+                    Parameters = new List<ParameterInfo>()
+                    {
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 0,
+                            ParameterName = "ServiceName",
+                            IsRequired = true
+                        },
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 1,
+                            ParameterName = "CommandName",
+                            IsRequired = false
+                        }
+                    }
+                }
+            };
+        }
 
         public override void HandleEvents()
         {
@@ -73,13 +140,13 @@ namespace AegisBot.Implementations
 
         private async Task<Message> StartCommand(MessageEventArgs e, User user)
         {
-            string command = GetCommandFromMessage(e.Message.Text);
+            CommandInfo command = GetCommandFromMessage(e.Message.Text);
             List<string> paramList = GetParametersFromMessage(e.Message.Text);
-            switch (command.ToLower())
+            switch (command.CommandName.ToLower())
             {
                 case "addservice":
                     return await AddService(paramList, e.Message);
-                case "help":
+                case "servicehelp":
                     return await GetHelp(paramList, user);
             }
             return null;
