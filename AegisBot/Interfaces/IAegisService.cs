@@ -11,7 +11,8 @@ namespace AegisBot.Interfaces
     {
         bool ContainsCommand(string command);
         void HandleEvents();
-        Task<Message> RunCommand(MessageEventArgs e);
-        Task<Message> RunCommand(UserEventArgs e, string command);
+        Task RunCommand(MessageEventArgs e);
+        Task RunCommand(UserEventArgs e, string command);
+        void SaveService();
     }
 }

@@ -251,3 +251,6 @@ paket-files/
 .idea/
 *.sln.iml
 /AegisBot/Applications
+/AegisBot/Auth.txt.txt
+/AegisBot/Auth.txt
+/AegisBot/Services

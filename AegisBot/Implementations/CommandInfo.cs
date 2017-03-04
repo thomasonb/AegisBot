@@ -11,7 +11,7 @@ namespace AegisBot.Implementations
         public string CommandName { get; set; }
         public List<ChannelInfo> Channels { get; set; }
         public List<ParameterInfo> Parameters { get; set; } = new List<ParameterInfo>();
-        public List<RoleInfo> Roles { get; set; }
+        public List<RoleInfo> Roles { get; set; } = new List<RoleInfo>();
         public string HelpText { get; set; }
 
         public CommandInfo(string commandName)

@@ -19,7 +19,7 @@ namespace AegisBot.Implementations
         public override List<CommandInfo> CommandList { get; set; }
         public override string CommandDelimiter { get; set; }
         public override List<UInt64> Channels { get; set; }
-        public override DiscordClient Client { get; set; }
+        internal override DiscordClient Client { get; set; }
         public override string HelpText { get; set; }
         private static string saveDir = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.Parent?.Parent?.FullName + "\\Applications";
 
@@ -38,6 +38,7 @@ namespace AegisBot.Implementations
                 new CommandInfo("deny") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
                 new CommandInfo("investigate") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } }
             };
+            Channels = new List<ulong>();
         }
 
         public async Task<Message> SendApplication(string message, User user)
@@ -208,12 +209,12 @@ namespace AegisBot.Implementations
             return Applications.FirstOrDefault(x => x.ApplicationID == applicationId);
         }
 
-        public override Task<Message> RunCommand(MessageEventArgs e)
+        public override Task RunCommand(MessageEventArgs e)
         {
             return StartCommand(e.Message.Text, e.User);
         }
 
-        public override Task<Message> RunCommand(UserEventArgs e, string command)
+        public override Task RunCommand(UserEventArgs e, string command)
         {
             if (ContainsCommand(command))
             {

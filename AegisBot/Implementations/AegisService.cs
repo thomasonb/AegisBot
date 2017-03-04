@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Discord;
 using AegisBot.Interfaces;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Reflection;
+using Newtonsoft.Json;
 
 namespace AegisBot.Implementations
 {
@@ -13,16 +16,29 @@ namespace AegisBot.Implementations
     {
         public abstract List<CommandInfo> CommandList { get; set; }
         public abstract string CommandDelimiter { get; set; }
-        public abstract DiscordClient Client { get; set; }
+        internal abstract DiscordClient Client { get; set; }
         public abstract List<UInt64> Channels { get; set; }
         public abstract string HelpText { get; set; }
+        private string saveDir = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.Parent?.Parent?.FullName + "\\Services";
+
+        public async void SaveService()
+        {
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            using (StreamWriter sw = new StreamWriter(saveDir + $"\\{GetType().Name}.Service.json", false))
+            {
+                await sw.WriteAsync(JsonConvert.SerializeObject(this, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Formatting = Formatting.Indented }));
+            }
+        }
 
         public bool ContainsCommand(string message)
         {
             string command = message.Substring(0, message.Contains(" ") ? message.IndexOf(" ") : message.Length);
             if (CommandList.Any())
             {
-                return CommandList.Any(x => CommandDelimiter + x == command.ToLower());
+                return CommandList.Any(x => CommandDelimiter + x.CommandName.ToLower() == command.ToLower());
             }
             return false;
         }
@@ -49,12 +65,12 @@ namespace AegisBot.Implementations
                 command.Parameters[paramInfo.IndexOf(x)].ParameterValue = x;
             });
 
-            return command.Parameters.Any(x => x.IsRequired && string.IsNullOrWhiteSpace(x.ParameterValue));
+            return command.Parameters.Any(x => x.IsRequired && !string.IsNullOrWhiteSpace(x.ParameterValue));
         }
 
-        public abstract Task<Message> RunCommand(MessageEventArgs e);
+        public abstract Task RunCommand(MessageEventArgs e);
 
-        public abstract Task<Message> RunCommand(UserEventArgs e, string command);
+        public abstract Task RunCommand(UserEventArgs e, string command);
 
         public abstract void HandleEvents();
     }

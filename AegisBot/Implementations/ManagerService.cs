@@ -12,8 +12,8 @@ namespace AegisBot.Implementations
     {
         public override List<CommandInfo> CommandList { get; set; }
         public override string CommandDelimiter { get; set; } = ".";
-        public override List<UInt64> Channels { get; set; }
-        public override DiscordClient Client { get; set; }
+        public override List<UInt64> Channels { get; set; } = new List<ulong>();
+        internal override DiscordClient Client { get; set; }
         public override string HelpText { get; set; }
 
         public ManagerService()
@@ -30,7 +30,11 @@ namespace AegisBot.Implementations
                             ParameterName = "ServiceName",
                             IsRequired = true
                         }
-                    }
+                    },
+                    HelpText = $"```{Environment.NewLine}.addservice - usage {Environment.NewLine}" +
+                               $".addservice (servicename) {Environment.NewLine}" +
+                               $"Type .listservices in order to get a list of the enabled services for your role(s).{Environment.NewLine}" +
+                               $"```"
                 },
                 new CommandInfo("serviceHelp")
                 {
@@ -91,44 +95,38 @@ namespace AegisBot.Implementations
             };
         }
 
-        public override Task<Message> RunCommand(MessageEventArgs e)
+        public override Task RunCommand(MessageEventArgs e)
         {
             if (ContainsCommand(e.Message.Text))
             {
                 return StartCommand(e, e.User);
             }
-            return null;
+            return Task.FromResult<object>(null);
         }
 
         private async Task<Message> AddService(List<string> Parameters, Message Message)
         {
-            if (Message.User.Roles.Any(x => x.Name == "Mod"))
+            if (Parameters.Any())
             {
-                if (Parameters.Any())
+                var service = ServiceFactory.GetService(Parameters[0]) as AegisService;
+                if (service != null)
                 {
-                    var service = ServiceFactory.GetService(Parameters[0]) as AegisService;
-                    if (service != null)
-                    {
-                        service.Channels.Add(Message.Channel.Id);
-                        return await Message.Channel.SendMessage($"{Parameters[0]} is now listening to this channel");
-                    }
-                    else
-                    {
-                        return await Message.Channel.SendMessage($"{Parameters[0]} is not a valid service");
-                    }
+                    service.Channels.Add(Message.Channel.Id);
+                    service.SaveService();
+                    return await Message.Channel.SendMessage($"{Parameters[0]} is now listening to this channel");
                 }
                 else
                 {
-                    return await GetHelp(GetParametersFromMessage("!help addservice"), Message.User);
+                    return await Message.Channel.SendMessage($"{Parameters[0]} is not a valid service");
                 }
             }
             else
             {
-                return await Message.User.SendMessage($"You do not have permission to run that command");
+                return await GetServiceHelp(GetParametersFromMessage("!help addservice"), Message.User);
             }
         }
 
-        private async Task<Message> GetHelp(List<string> Parameters, User User)
+        private async Task<Message> GetServiceHelp(List<string> Parameters, User User)
         {
             AegisService x = (ServiceFactory.GetService(Parameters[0]) as AegisService);
             if (x != null)
@@ -138,21 +136,42 @@ namespace AegisBot.Implementations
             return null;
         }
 
+        private async Task<Message> GetCommandHelp(CommandInfo command, User User)
+        {
+            return await User.SendMessage(command.HelpText);
+        }
+
         private async Task<Message> StartCommand(MessageEventArgs e, User user)
         {
             CommandInfo command = GetCommandFromMessage(e.Message.Text);
             List<string> paramList = GetParametersFromMessage(e.Message.Text);
-            switch (command.CommandName.ToLower())
+            if (command.Roles.Count == 0 || user.Roles.Any(x => command.Roles.Any(y => y.RoleID == x.Id)))
             {
-                case "addservice":
-                    return await AddService(paramList, e.Message);
-                case "servicehelp":
-                    return await GetHelp(paramList, user);
+                if (FillParameterValues(GetParametersFromMessage(e.Message.Text), command))
+                {
+                    switch (command.CommandName.ToLower())
+                    {
+                        case "addservice":
+                            return await AddService(paramList, e.Message);
+                        case "servicehelp":
+                            return await GetServiceHelp(paramList, user);
+                        case "commandhelp":
+                            return await GetCommandHelp(command, user);
+                    }
+                }
+                else
+                {
+                    return await GetCommandHelp(command, user);
+                }
+            }
+            else
+            {
+                //return await PermissionsIssue();
             }
             return null;
         }
 
-        public override Task<Message> RunCommand(UserEventArgs e, string command)
+        public override Task RunCommand(UserEventArgs e, string command)
         {
             throw new NotImplementedException();
         }
