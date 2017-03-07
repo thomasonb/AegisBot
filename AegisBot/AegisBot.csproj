@@ -98,6 +98,7 @@
     <Compile Include="Implementations\ParameterInfo.cs" />
     <Compile Include="Implementations\QA.cs" />
     <Compile Include="Implementations\RoleInfo.cs" />
+    <Compile Include="Implementations\TournamentService.cs" />
     <Compile Include="Interfaces\IAegisService.cs" />
     <Compile Include="Implementations\ServiceFactory.cs" />
     <Compile Include="Program.cs" />
