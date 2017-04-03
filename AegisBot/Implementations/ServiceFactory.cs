@@ -54,6 +54,7 @@ namespace AegisBot.Implementations
                 Services.Add(service);
                 service.SaveService();
             }
+            service.LoadCommands();
             (Services.First(x => x.GetType() == typeof(T)) as AegisService).Client = client;
         }
     }

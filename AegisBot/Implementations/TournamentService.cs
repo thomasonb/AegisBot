@@ -13,6 +13,11 @@ namespace AegisBot.Implementations
         public override string HelpText { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         internal override DiscordClient Client { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public override void LoadCommands()
+        {
+            return;
+        }
+
         public override void HandleEvents()
         {
             throw new NotImplementedException();

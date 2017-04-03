@@ -14,5 +14,6 @@ namespace AegisBot.Interfaces
         Task RunCommand(MessageEventArgs e);
         Task RunCommand(UserEventArgs e, string command);
         void SaveService();
+        void LoadCommands();
     }
 }

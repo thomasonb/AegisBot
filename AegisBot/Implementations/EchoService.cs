@@ -16,6 +16,11 @@ namespace AegisBot.Implementations
         public override List<CommandInfo> CommandList { get; set; }
         public override string HelpText { get; set; }
 
+        public override void LoadCommands()
+        {
+            return;
+        }
+
         public override void HandleEvents()
         {
             Client.MessageReceived += async (s, e) =>

@@ -65,8 +65,13 @@ namespace AegisBot.Implementations
                 command.Parameters[paramInfo.IndexOf(x)].ParameterValue = x;
             });
 
-            return command.Parameters.Any(x => x.IsRequired && !string.IsNullOrWhiteSpace(x.ParameterValue));
+            //make sure all parameters that are required are filled out
+            return !command.Parameters.Where(x => x.IsRequired).Any(x => string.IsNullOrWhiteSpace(x.ParameterValue));
+
+            //return command.Parameters.Any(x => x.IsRequired && !string.IsNullOrWhiteSpace(x.ParameterValue))
         }
+
+        public abstract void LoadCommands();
 
         public abstract Task RunCommand(MessageEventArgs e);
 

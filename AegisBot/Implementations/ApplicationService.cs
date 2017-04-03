@@ -26,6 +26,15 @@ namespace AegisBot.Implementations
         public ApplicationService()
         {
             CommandDelimiter = "!";
+            Channels = new List<ulong>();
+        }
+
+        public override void LoadCommands()
+        {
+            if (CommandList.Any())
+            {
+                return;
+            }
             CommandList = new List<CommandInfo>
             {
                 new CommandInfo("apply"),
@@ -38,7 +47,6 @@ namespace AegisBot.Implementations
                 new CommandInfo("deny") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
                 new CommandInfo("investigate") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } }
             };
-            Channels = new List<ulong>();
         }
 
         public async Task<Message> SendApplication(string message, User user)
@@ -124,14 +132,14 @@ namespace AegisBot.Implementations
 
         public async Task<Message> DenyApplication(User user, string applicationID, Channel channel)
         {
-            if (user.Roles.Any(x => x.Name == "Mods" && x.Client.Servers.Select(y => y.Name).Contains("myServer")))
+            if (user.Roles.Any(x => x.Name == "Mods" && x.Client.Servers.Select(y => y.Name).Contains("ybadragon")))
             {
                 Application app = GetApplicationByID(applicationID);
                 if (app != null)
                 {
                     app.CurrentState = Application.State.Denied;
                     await app.SaveApplication(saveDir);
-                    User applicant = user.Client.Servers.First(x => x.Name == "myServer")
+                    User applicant = user.Client.Servers.First(x => x.Name == "ybadragon")
                         .Users.FirstOrDefault(x => x.Id == app.UserID);
                     if (applicant != null)
                     {
@@ -148,14 +156,14 @@ namespace AegisBot.Implementations
 
         public async Task<Message> InvestigateApplication(User user, string applicationID, Channel channel)
         {
-            if (user.Roles.Any(x => x.Name == "Mods" && x.Client.Servers.Select(y => y.Name).Contains("myServer")))
+            if (user.Roles.Any(x => x.Name == "Mods" && x.Client.Servers.Select(y => y.Name).Contains("ybadragon")))
             {
                 Application app = GetApplicationByID(applicationID);
                 if (app != null)
                 {
                     app.CurrentState = Application.State.Approved;
                     await app.SaveApplication(saveDir);
-                    User applicant = user.Client.Servers.First(x => x.Name == "myServer")
+                    User applicant = user.Client.Servers.First(x => x.Name == "ybadragon")
                         .Users.FirstOrDefault(x => x.Id == app.UserID);
                     if (applicant != null)
                     {
@@ -172,18 +180,18 @@ namespace AegisBot.Implementations
 
         public async Task<Message> ApproveApplication(User user, string applicationID, Channel channel)
         {
-            if (user.Roles.Any(x => x.Name == "Mods" && x.Client.Servers.Select(y => y.Name).Contains("myServer")))
+            if (user.Roles.Any(x => x.Name == "Mods" && x.Client.Servers.Select(y => y.Name).Contains("ybadragon")))
             {
                 Application app = GetApplicationByID(applicationID);
                 if (app != null)
                 {
                     app.CurrentState = Application.State.Approved;
                     await app.SaveApplication(saveDir);
-                    User applicant = user.Client.Servers.First(x => x.Name == "myServer")
+                    User applicant = user.Client.Servers.First(x => x.Name == "ybadragon")
                         .Users.FirstOrDefault(x => x.Id == app.UserID);
                     if (applicant != null)
                     {
-                        await applicant.AddRoles(applicant.Client.Servers.First(y => y.Name == "myServer").Roles.First(y => y.Name == "Approved"));
+                        await applicant.AddRoles(applicant.Client.Servers.First(y => y.Name == "ybadragon").Roles.First(y => y.Name == "Approved"));
                         await channel.SendMessage($"{user.Name} has approved {applicant.Name}'s application. {applicant.Name} has been notified about the status change of their application.");
                         return
                             await applicant.PrivateChannel.SendMessage(
@@ -227,7 +235,7 @@ namespace AegisBot.Implementations
         {
             Client.MessageReceived += async (s, e) =>
             {
-                if (Channels.Contains(e.Channel.Id))
+                if (Channels.Contains(e.Channel.Id) || e.Channel.IsPrivate)
                 {
                     //does this channel and user correspond to any applications?
                     Application app =
@@ -287,7 +295,7 @@ namespace AegisBot.Implementations
         private async Task<Message> StartCommand(string message, User user)
         {
             Channel applicationChannel =
-                Client.Servers.First(x => x.Name == "myServer").TextChannels.First(x => x.Name == "applications");
+                Client.Servers.First(x => x.Name == "ybadragon").TextChannels.First(x => x.Name == "applications");
             CommandInfo command = GetCommandFromMessage(message);
             if (FillParameterValues(GetParametersFromMessage(message), command))
             {

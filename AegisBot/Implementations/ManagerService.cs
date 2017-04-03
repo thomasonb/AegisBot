@@ -18,6 +18,15 @@ namespace AegisBot.Implementations
 
         public ManagerService()
         {
+
+        }
+
+        public override void LoadCommands()
+        {
+            if (CommandList.Any())
+            {
+                return;
+            }
             CommandList = new List<CommandInfo>()
             {
                 new CommandInfo("addservice")
