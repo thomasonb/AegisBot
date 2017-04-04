@@ -31,7 +31,7 @@ namespace AegisBot.Implementations
 
         public override void LoadCommands()
         {
-            if (CommandList.Any())
+            if (CommandList != null)
             {
                 return;
             }
@@ -45,8 +45,10 @@ namespace AegisBot.Implementations
                 new CommandInfo("begin"),
                 new CommandInfo("approve") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
                 new CommandInfo("deny") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
-                new CommandInfo("investigate") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } }
+                new CommandInfo("investigate") {Parameters = new List<ParameterInfo>() { new ParameterInfo() {ParameterIndex = 0, ParameterName = "ApplicationID", IsRequired = true } } },
+                new CommandInfo("addQuestion") { Parameters = new List<ParameterInfo>() { new ParameterInfo() { ParameterIndex = 0, ParameterName = "Question", IsRequired = true} } }
             };
+            SaveService();
         }
 
         public async Task<Message> SendApplication(string message, User user)
@@ -80,7 +82,7 @@ namespace AegisBot.Implementations
         public async Task<Message> AskNextQuestion(User user, Application.State state)
         {
             Application app = GetApplicationsForChannel(user.PrivateChannel.Id, state).First(x => x.UserID == user.Id);
-            return await user.SendMessage(app.QAs.First(x => x.QuestionID == app.CurrentQuestionID + 1).Question);
+            return await user.SendMessage(Application.QAs.First(x => x.QuestionID == app.CurrentQuestionID + 1).Question);
         }
 
         public async Task<Message> AskQuestion(User user, int questionID)
@@ -202,6 +204,11 @@ namespace AegisBot.Implementations
             return null;
         }
 
+        private async Task<Message> AddQuestion(string Question)
+        {
+           return await Application.AddQuestion(Question);
+        }
+
         private Application GetApplicationByID(string applicationId)
         {
             List<string> ApplicationFiles = Directory.GetFiles(saveDir).ToList();
@@ -297,28 +304,33 @@ namespace AegisBot.Implementations
             Channel applicationChannel =
                 Client.Servers.First(x => x.Name == "ybadragon").TextChannels.First(x => x.Name == "applications");
             CommandInfo command = GetCommandFromMessage(message);
-            if (FillParameterValues(GetParametersFromMessage(message), command))
+            if (CanRunCommand(command, user))
             {
-                switch (command.CommandName)
+                if (FillParameterValues(GetParametersFromMessage(message), command))
                 {
-                    case "apply":
-                        return await SendApplication(message, user);
-                    case "next":
-                        return await AskNextQuestion(user, Application.State.InProgress);
-                    case "begin":
-                        return await BeginApplication(user);
-                    case "review":
-                        return await ReviewApplication(user);
-                    case "change":
-                        return await ChangeQuestion(user, command.Parameters[0].ParameterValue);
-                    case "submit":
-                        return await SubmitApplication(user, applicationChannel);
-                    case "approve":
-                        return await ApproveApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
-                    case "deny":
-                        return await DenyApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
-                    case "investigate":
-                        return await InvestigateApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                    switch (command.CommandName.ToLower())
+                    {
+                        case "apply":
+                            return await SendApplication(message, user);
+                        case "next":
+                            return await AskNextQuestion(user, Application.State.InProgress);
+                        case "begin":
+                            return await BeginApplication(user);
+                        case "review":
+                            return await ReviewApplication(user);
+                        case "change":
+                            return await ChangeQuestion(user, command.Parameters[0].ParameterValue);
+                        case "submit":
+                            return await SubmitApplication(user, applicationChannel);
+                        case "approve":
+                            return await ApproveApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                        case "deny":
+                            return await DenyApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                        case "investigate":
+                            return await InvestigateApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                        case "addquestion":
+                            return await AddQuestion(command.Parameters[0].ParameterValue);
+                    }
                 }
             }
             return null;

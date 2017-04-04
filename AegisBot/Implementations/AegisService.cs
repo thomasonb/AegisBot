@@ -14,12 +14,18 @@ namespace AegisBot.Implementations
 {
     public abstract class AegisService : IAegisService
     {
+        public enum ServiceState
+        {
+            NotReady, Ready
+        }
         public abstract List<CommandInfo> CommandList { get; set; }
         public abstract string CommandDelimiter { get; set; }
         internal abstract DiscordClient Client { get; set; }
         public abstract List<UInt64> Channels { get; set; }
         public abstract string HelpText { get; set; }
         private string saveDir = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.Parent?.Parent?.FullName + "\\Services";
+        private ServiceState? _state { get; set; }
+        public ServiceState? state { get { return _state == null ? ServiceState.NotReady : _state; } set { _state = value; } }
 
         public async void SaveService()
         {
@@ -31,6 +37,11 @@ namespace AegisBot.Implementations
             {
                 await sw.WriteAsync(JsonConvert.SerializeObject(this, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Formatting = Formatting.Indented }));
             }
+        }
+
+        public bool CanRunCommand(CommandInfo command, User user)
+        {
+            return (command.Roles.Count == 0 || user.Roles.Any(x => command.Roles.Any(y => y.RoleID == x.Id))) && !user.IsBot && (state == ServiceState.Ready || command.CommandName.ToLower() == "readyservice");
         }
 
         public bool ContainsCommand(string message)
@@ -48,7 +59,7 @@ namespace AegisBot.Implementations
             return
                 CommandList.First(
                     x =>
-                        CommandDelimiter + x.CommandName ==
+                        CommandDelimiter + x.CommandName.ToLower() ==
                         message.ToLower().Substring(0, message.Contains(" ") ? message.IndexOf(" ") : message.Length));
         }
 

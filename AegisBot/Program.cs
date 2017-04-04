@@ -26,6 +26,7 @@ namespace AegisBot
 
         public void Start()
         {
+            Console.WriteLine(saveDir);
             client = new DiscordClient();
             LoadServices(client);
             HandleEvents(client);
@@ -36,6 +37,7 @@ namespace AegisBot
             ServiceFactory.LoadService<ManagerService>(client);
             ServiceFactory.LoadService<ApplicationService>(client);
             ServiceFactory.LoadService<EchoService>(client);
+            Application app = new Application(0);
         }
 
         public void HandleEvents(DiscordClient client)

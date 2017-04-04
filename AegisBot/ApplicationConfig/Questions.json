@@ -1,0 +1,97 @@
+[
+  {
+    "Question": "Your Real Name*",
+    "Answer": null,
+    "QuestionID": 1
+  },
+  {
+    "Question": "Preferred Name/Handle",
+    "Answer": null,
+    "QuestionID": 2
+  },
+  {
+    "Question": "Date of Birth",
+    "Answer": null,
+    "QuestionID": 3
+  },
+  {
+    "Question": "Gender",
+    "Answer": null,
+    "QuestionID": 4
+  },
+  {
+    "Question": "Are you a decent person?",
+    "Answer": null,
+    "QuestionID": 5
+  },
+  {
+    "Question": "You wanna meet some cool people to play games with?",
+    "Answer": null,
+    "QuestionID": 6
+  },
+  {
+    "Question": "Preferred Gaming Platform",
+    "Answer": null,
+    "QuestionID": 7
+  },
+  {
+    "Question": "List Some Favorite Games",
+    "Answer": null,
+    "QuestionID": 8
+  },
+  {
+    "Question": "Do you play Rocket League?",
+    "Answer": null,
+    "QuestionID": 9
+  },
+  {
+    "Question": "What is your Standard Rank (3v3)? (Type \"N/A\" if you DONT play Rocket League)",
+    "Answer": null,
+    "QuestionID": 10
+  },
+  {
+    "Question": "Doubles Rank (2v2)? (Type \"N/A\" if you DONT play Rocket League)",
+    "Answer": null,
+    "QuestionID": 11
+  },
+  {
+    "Question": "Are you interested in playing Rocket League at a Competitive Level (Semi-Pro/Pro)?",
+    "Answer": null,
+    "QuestionID": 12
+  },
+  {
+    "Question": "Have you participated in a \"Legitimate\" Rocket League Tournament before? (ESL, ModkIT, RLCS)?",
+    "Answer": null,
+    "QuestionID": 13
+  },
+  {
+    "Question": "SteamCommunity URL*",
+    "Answer": null,
+    "QuestionID": 14
+  },
+  {
+    "Question": "Battle.NET BattleTag*",
+    "Answer": null,
+    "QuestionID": 15
+  },
+  {
+    "Question": "Origin ID*",
+    "Answer": null,
+    "QuestionID": 16
+  },
+  {
+    "Question": "LoL Username",
+    "Answer": null,
+    "QuestionID": 17
+  },
+  {
+    "Question": "Do you acknowledge that if you're a douche, we can kick/ban you with or without prior warning?",
+    "Answer": null,
+    "QuestionID": 18
+  },
+  {
+    "Question": "Anyting else you wanna say or add?",
+    "Answer": null,
+    "QuestionID": 19
+  }
+]

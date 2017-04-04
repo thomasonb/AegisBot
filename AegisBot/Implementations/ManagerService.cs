@@ -23,7 +23,7 @@ namespace AegisBot.Implementations
 
         public override void LoadCommands()
         {
-            if (CommandList.Any())
+            if (CommandList != null)
             {
                 return;
             }
@@ -92,8 +92,21 @@ namespace AegisBot.Implementations
                             IsRequired = false
                         }
                     }
+                },
+                new CommandInfo("readyService")
+                {
+                    Parameters = new List<ParameterInfo>()
+                    {
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 0,
+                            ParameterName = "ServiceName",
+                            IsRequired = true
+                        }
+                    }
                 }
             };
+            SaveService();
         }
 
         public override void HandleEvents()
@@ -135,6 +148,21 @@ namespace AegisBot.Implementations
             }
         }
 
+        private async Task<Message> ReadyService(List<string> Parameters, Message Message)
+        {
+            var service = ServiceFactory.GetService(Parameters[0]) as AegisService;
+            if (service != null)
+            {
+                service.state = ServiceState.Ready;
+                service.SaveService();
+                return await Message.Channel.SendMessage($"{Parameters[0]} is now ready and will start accepting commands.");
+            }
+            else
+            {
+                return await GetServiceHelp(GetParametersFromMessage("!help addservice"), Message.User);
+            }
+        }
+
         private async Task<Message> GetServiceHelp(List<string> Parameters, User User)
         {
             AegisService x = (ServiceFactory.GetService(Parameters[0]) as AegisService);
@@ -154,7 +182,7 @@ namespace AegisBot.Implementations
         {
             CommandInfo command = GetCommandFromMessage(e.Message.Text);
             List<string> paramList = GetParametersFromMessage(e.Message.Text);
-            if (command.Roles.Count == 0 || user.Roles.Any(x => command.Roles.Any(y => y.RoleID == x.Id)))
+            if (CanRunCommand(command, user))
             {
                 if (FillParameterValues(GetParametersFromMessage(e.Message.Text), command))
                 {
@@ -166,6 +194,8 @@ namespace AegisBot.Implementations
                             return await GetServiceHelp(paramList, user);
                         case "commandhelp":
                             return await GetCommandHelp(command, user);
+                        case "readyservice":
+                            return await ReadyService(paramList, e.Message);
                     }
                 }
                 else

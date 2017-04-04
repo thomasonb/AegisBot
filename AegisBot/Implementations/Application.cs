@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace AegisBot.Implementations
 {
@@ -15,7 +16,7 @@ namespace AegisBot.Implementations
         {
             New, InProgress, Finished, Any, Change, Approved, Denied, NeedsInvestigation, Submitted
         }
-        public List<QA> QAs { get; set; } = new List<QA>();
+        public static List<QA> QAs { get; set; } = new List<QA>();
         public UInt64 UserID { get; private set; }
         public UInt64 ChannelID { get; set; }
         public string ApplicationTitle { get; set; }
@@ -31,6 +32,9 @@ namespace AegisBot.Implementations
         private DateTime LastUpdateDate;
         [JsonProperty(PropertyName = "CreateDate")]
         private DateTime CreateDate;
+
+        private static string saveDir = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.Parent?.Parent?.FullName + "\\ApplicationConfig";
+
 
         public string GetStateDescription()
         {
@@ -67,6 +71,27 @@ namespace AegisBot.Implementations
             QAs.Add(new QA(17, "LoL Username"));
             QAs.Add(new QA(18, "Do you acknowledge that if you're a douche, we can kick/ban you with or without prior warning?"));
             QAs.Add(new QA(19, "Anyting else you wanna say or add?"));
+            SaveQuestions();
+        }
+
+        private async static void SaveQuestions()
+        {
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            using (StreamWriter sw = new StreamWriter(saveDir + $"\\Questions.json", false))
+            {
+                await sw.WriteAsync(JsonConvert.SerializeObject(QAs, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Formatting = Formatting.Indented }));
+            }
+        }
+
+        public static Task<Message> AddQuestion(string Question)
+        {
+            int? LastID = QAs.LastOrDefault()?.QuestionID;
+            LastID = LastID == null ? 1 : LastID + 1;
+            QAs.Add(new QA((int)LastID, Question));
+            return null;
         }
 
         public async Task SaveApplication(string solutionPath)
