@@ -104,6 +104,34 @@ namespace AegisBot.Implementations
                             IsRequired = true
                         }
                     }
+                },
+                new CommandInfo("addCommandRole")
+                {
+                    Parameters = new List<ParameterInfo>()
+                    {
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 0,
+                            ParameterName = "ServiceName",
+                            IsRequired = true
+                        },
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 1,
+                            ParameterName = "CommandName",
+                            IsRequired = true
+                        },
+                        new ParameterInfo()
+                        {
+                            ParameterIndex = 2,
+                            ParameterName = "RoleName",
+                            IsRequired = true
+                        }
+                    },
+                    HelpText = $"```{Environment.NewLine}.addCommandRole - usage {Environment.NewLine}" +
+                               $".addcommandrole (servicename) (commandname) (rolename) {Environment.NewLine}" +
+                               $"Type .listservices in order to get a list of the enabled services for your role(s).{Environment.NewLine}" +
+                               $"```"
                 }
             };
             SaveService();
@@ -163,6 +191,42 @@ namespace AegisBot.Implementations
             }
         }
 
+        private async Task<Message> AddCommandRole(List<string> Parameters, Message Message)
+        {
+            var service = ServiceFactory.GetService(Parameters[0]) as AegisService;
+
+            string result = "";
+
+            if (service != null)
+            {
+                var command = service.CommandList.FirstOrDefault(x => x.CommandName == Parameters[1]);
+                if (command != null)
+                {
+                    Role role = Message.Server.Roles.FirstOrDefault(x => x.Name == Parameters[2]);
+                    if (role != null)
+                    {
+                        command.Roles.Add(new RoleInfo() { RoleID = role.Id, RoleName = role.Name });
+                        result = $"{role.Name} is now able to use {command.CommandName}";
+                        service.SaveService();
+                    }
+                    else
+                    {
+                        result = $"{Parameters[2]} is not a valid role in this server";
+                    }
+                }
+                else
+                {
+                    result = $"{Parameters[1]} is not a valid command in {service.GetType().Name} in this server";
+                }
+            }
+            else
+            {
+                result = $"{Parameters[0]} is not a valid service in this server";
+            }
+
+            return await Message.Channel.SendMessage(result);
+        }
+
         private async Task<Message> GetServiceHelp(List<string> Parameters, User User)
         {
             AegisService x = (ServiceFactory.GetService(Parameters[0]) as AegisService);
@@ -196,6 +260,8 @@ namespace AegisBot.Implementations
                             return await GetCommandHelp(command, user);
                         case "readyservice":
                             return await ReadyService(paramList, e.Message);
+                        case "addcommandrole":
+                            return await AddCommandRole(paramList, e.Message);
                     }
                 }
                 else

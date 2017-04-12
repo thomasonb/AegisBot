@@ -38,6 +38,8 @@ namespace AegisBot
             ServiceFactory.LoadService<ApplicationService>(client);
             ServiceFactory.LoadService<EchoService>(client);
             Application app = new Application(0);
+            app.LoadQuestions();
+            ServiceFactory.GetService<ApplicationService>().LoadCommands();
         }
 
         public void HandleEvents(DiscordClient client)

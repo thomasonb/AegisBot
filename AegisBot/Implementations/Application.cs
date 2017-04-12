@@ -45,33 +45,45 @@ namespace AegisBot.Implementations
         {
             CreateDate = DateTime.Now;
             ApplicationID = Guid.NewGuid().ToString();
-            LoadQuestions();
+            //LoadQuestions();
             UserID = userID;
             CurrentState = State.New;
         }
 
-        private void LoadQuestions()
+        public void LoadQuestions()
         {
-            QAs.Add(new QA(1, "Your Real Name*"));
-            QAs.Add(new QA(2, "Preferred Name/Handle"));
-            QAs.Add(new QA(3, "Date of Birth"));
-            QAs.Add(new QA(4, "Gender"));
-            QAs.Add(new QA(5, "Are you a decent person?"));
-            QAs.Add(new QA(6, "You wanna meet some cool people to play games with?"));
-            QAs.Add(new QA(7, "Preferred Gaming Platform"));
-            QAs.Add(new QA(8, "List Some Favorite Games"));
-            QAs.Add(new QA(9, "Do you play Rocket League?"));
-            QAs.Add(new QA(10, "What is your Standard Rank (3v3)? (Type \"N/A\" if you DONT play Rocket League)"));
-            QAs.Add(new QA(11, "Doubles Rank (2v2)? (Type \"N/A\" if you DONT play Rocket League)"));
-            QAs.Add(new QA(12, "Are you interested in playing Rocket League at a Competitive Level (Semi-Pro/Pro)?"));
-            QAs.Add(new QA(13, "Have you participated in a \"Legitimate\" Rocket League Tournament before? (ESL, ModkIT, RLCS)?"));
-            QAs.Add(new QA(14, "SteamCommunity URL*"));
-            QAs.Add(new QA(15, "Battle.NET BattleTag*"));
-            QAs.Add(new QA(16, "Origin ID*"));
-            QAs.Add(new QA(17, "LoL Username"));
-            QAs.Add(new QA(18, "Do you acknowledge that if you're a douche, we can kick/ban you with or without prior warning?"));
-            QAs.Add(new QA(19, "Anyting else you wanna say or add?"));
-            SaveQuestions();
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            using (StreamReader sr = new StreamReader(saveDir + "\\Questions.json"))
+            {
+                QAs = JsonConvert.DeserializeObject<List<QA>>(sr.ReadToEnd());
+            }
+
+            if (!QAs.Any())
+            {
+                QAs.Add(new QA(1, "Your Real Name*"));
+                QAs.Add(new QA(2, "Preferred Name/Handle"));
+                QAs.Add(new QA(3, "Date of Birth"));
+                QAs.Add(new QA(4, "Gender"));
+                QAs.Add(new QA(5, "Are you a decent person?"));
+                QAs.Add(new QA(6, "You wanna meet some cool people to play games with?"));
+                QAs.Add(new QA(7, "Preferred Gaming Platform"));
+                QAs.Add(new QA(8, "List Some Favorite Games"));
+                QAs.Add(new QA(9, "Do you play Rocket League?"));
+                QAs.Add(new QA(10, "What is your Standard Rank (3v3)? (Type \"N/A\" if you DONT play Rocket League)"));
+                QAs.Add(new QA(11, "Doubles Rank (2v2)? (Type \"N/A\" if you DONT play Rocket League)"));
+                QAs.Add(new QA(12, "Are you interested in playing Rocket League at a Competitive Level (Semi-Pro/Pro)?"));
+                QAs.Add(new QA(13, "Have you participated in a \"Legitimate\" Rocket League Tournament before? (ESL, ModkIT, RLCS)?"));
+                QAs.Add(new QA(14, "SteamCommunity URL*"));
+                QAs.Add(new QA(15, "Battle.NET BattleTag*"));
+                QAs.Add(new QA(16, "Origin ID*"));
+                QAs.Add(new QA(17, "LoL Username"));
+                QAs.Add(new QA(18, "Do you acknowledge that if you're a douche, we can kick/ban you with or without prior warning?"));
+                QAs.Add(new QA(19, "Anyting else you wanna say or add?"));
+                SaveQuestions();
+            }
         }
 
         private async static void SaveQuestions()
@@ -86,12 +98,13 @@ namespace AegisBot.Implementations
             }
         }
 
-        public static Task<Message> AddQuestion(string Question)
+        public static Task AddQuestion(string Question)
         {
             int? LastID = QAs.LastOrDefault()?.QuestionID;
             LastID = LastID == null ? 1 : LastID + 1;
             QAs.Add(new QA((int)LastID, Question));
-            return null;
+            SaveQuestions();
+            return Task.FromResult<object>(null);
         }
 
         public async Task SaveApplication(string solutionPath)

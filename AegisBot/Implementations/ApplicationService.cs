@@ -204,9 +204,9 @@ namespace AegisBot.Implementations
             return null;
         }
 
-        private async Task<Message> AddQuestion(string Question)
+        private async Task AddQuestion(string Question)
         {
-           return await Application.AddQuestion(Question);
+           await Application.AddQuestion(Question);
         }
 
         private Application GetApplicationByID(string applicationId)
@@ -299,7 +299,7 @@ namespace AegisBot.Implementations
             };
         }
 
-        private async Task<Message> StartCommand(string message, User user)
+        private async Task StartCommand(string message, User user)
         {
             Channel applicationChannel =
                 Client.Servers.First(x => x.Name == "ybadragon").TextChannels.First(x => x.Name == "applications");
@@ -311,29 +311,39 @@ namespace AegisBot.Implementations
                     switch (command.CommandName.ToLower())
                     {
                         case "apply":
-                            return await SendApplication(message, user);
+                            await SendApplication(message, user);
+                            break;
                         case "next":
-                            return await AskNextQuestion(user, Application.State.InProgress);
+                            await AskNextQuestion(user, Application.State.InProgress);
+                            break;
                         case "begin":
-                            return await BeginApplication(user);
+                            await BeginApplication(user);
+                            break;
                         case "review":
-                            return await ReviewApplication(user);
+                            await ReviewApplication(user);
+                            break;
                         case "change":
-                            return await ChangeQuestion(user, command.Parameters[0].ParameterValue);
+                            await ChangeQuestion(user, command.Parameters[0].ParameterValue);
+                            break;
                         case "submit":
-                            return await SubmitApplication(user, applicationChannel);
+                            await SubmitApplication(user, applicationChannel);
+                            break;
                         case "approve":
-                            return await ApproveApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                            await ApproveApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                            break;
                         case "deny":
-                            return await DenyApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                            await DenyApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                            break;
                         case "investigate":
-                            return await InvestigateApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                            await InvestigateApplication(user, command.Parameters[0].ParameterValue, applicationChannel);
+                            break;
                         case "addquestion":
-                            return await AddQuestion(command.Parameters[0].ParameterValue);
+                            await AddQuestion(command.Parameters[0].ParameterValue);
+                            break;
                     }
                 }
             }
-            return null;
+            return;
         }
 
         public static List<Application> GetApplicationsForChannel(ulong channelId, Application.State state)

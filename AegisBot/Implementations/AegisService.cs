@@ -66,6 +66,8 @@ namespace AegisBot.Implementations
         internal List<string> GetParametersFromMessage(string message)
         {
             Regex regex = new Regex(@"[^\s""']+|""([^""]*)""|'([^']*)'");
+            //Regex regex = new Regex(@"[\""].+?[\""]|[^ ]+");
+            //Regex regex = new Regex("(\".*?\"|\\S+)");
             return regex.Matches(message).Cast<Match>().Select(x => x.Value).ToList().Skip(1).ToList();
         }
 
@@ -73,7 +75,7 @@ namespace AegisBot.Implementations
         {
             paramInfo.ForEach(x =>
             {
-                command.Parameters[paramInfo.IndexOf(x)].ParameterValue = x;
+                command.Parameters[paramInfo.IndexOf(x)].ParameterValue = x.Trim('"');
             });
 
             //make sure all parameters that are required are filled out
