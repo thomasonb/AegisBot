@@ -297,6 +297,17 @@ namespace AegisBot.Implementations
                 IAegisService applicationService = ServiceFactory.GetService<ApplicationService>();
                 await applicationService.RunCommand(e, "!apply");
             };
+
+            Client.JoinedServer += async (s, e) =>
+            {
+                await Task.FromResult<object>(null);
+            };
+
+            //Client.Ready += async (s, e) =>
+            //{
+            //    var x = Client.Servers.First();
+            //    await Task.FromResult<object>(null);
+            //};
         }
 
         private async Task StartCommand(string message, User user)

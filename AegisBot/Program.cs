@@ -53,6 +53,8 @@ namespace AegisBot
             {
                 await client.Connect(GetAuthToken(), TokenType.Bot);
             });
+
+            var y = client.Servers.First();
         }
 
         public string GetAuthToken()
