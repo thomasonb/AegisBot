@@ -303,10 +303,10 @@ namespace AegisBot.Implementations
                 await Task.FromResult<object>(null);
             };
 
-            Client.Ready += (s, e) =>
-            {
-                var x = Client.Servers.First();
-            };
+            //Client.Ready += (s, e) =>
+            //{
+            //    var x = Client.Servers.First();
+            //};
         }
 
         private async Task StartCommand(string message, User user)

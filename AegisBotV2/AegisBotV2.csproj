@@ -1,10 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputType>exe</OutputType>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <ApplicationIcon />
+    <OutputTypeEx>exe</OutputTypeEx>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Addons.InteractiveCommands" Version="1.2.2" />
     <PackageReference Include="Discord.Net" Version="1.0.0-rc" />
   </ItemGroup>
 
