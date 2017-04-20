@@ -22,7 +22,7 @@ namespace AegisBotV2.Services
         {
             Application app = new Application(user.Id, true)
             {
-                ApplicationTitle = "__My Title__"
+                ApplicationTitle = "Libertas RL Application"
             };
 
             await app.SaveApplication(saveDir);
@@ -32,8 +32,8 @@ namespace AegisBotV2.Services
             await app.SaveApplication(saveDir);
             await tempChannel.SendMessageAsync(app.GetApplication(false));
 
-            await tempChannel.SendMessageAsync($"Hello {user.Username}, Welcome to Gaming. Please complete the application above in order for the mods to determine your role in the server.{Environment.NewLine}{Environment.NewLine}" +
-                                 $"Type !begin whenever you are ready to begin the application process. At the end you will be able to review the application and make changes if necessary");
+            await tempChannel.SendMessageAsync($"Hello {user.Username}, Welcome to Libertas RL! Please complete the application above to make it easier for you to find teammates!{Environment.NewLine}{Environment.NewLine}" +
+                                 $"Type '@Aegis Begin' without the quotes whenever you are ready to begin the application process. At the end you will be able to review the application and make changes if necessary");
         }
 
         public static async Task BeginApplication(CommandContext ctx)
@@ -52,15 +52,21 @@ namespace AegisBotV2.Services
             await app.SaveApplication(saveDir);
             await ctx.Channel.SendMessageAsync(app.GetApplication(false));
             await ctx.Channel.SendMessageAsync(
-                                $"Above is the application you are about to send. Please review your answers and change any you want by typing !change (question number) without the parentheses.{Environment.NewLine}{Environment.NewLine}" +
-                                $"Once you are done making your modifications, please type !submit to submit your application.");
+                                $"Above is the application you are about to send. Please review your answers and change any you want by typing '@Aegis Change (question number)' without the quotes or the parentheses.{Environment.NewLine}{Environment.NewLine}" +
+                                $"Once you are done making your modifications, please type '@Aegis Submit' without the quotes to submit your application.");
 
         }
 
         public static async Task AskNextQuestion(CommandContext ctx, List<Application.State> states)
         {
             Application app = GetApplicationsForChannel(ctx.Channel.Id, states).First(x => x.UserID == ctx.User.Id);
-            await ctx.Channel.SendMessageAsync(app.QAs.First(x => x.QuestionID == app.CurrentQuestionID + 1).Question);
+            QA question = app.QAs[app.CurrentQuestionID];
+            await ctx.Channel.SendMessageAsync(question.Question);
+            if (question.ValidAnswers.Any())
+            {
+                string appendedAnswers = string.Join(", ", question.ValidAnswers);
+                await ctx.Channel.SendMessageAsync($"{Environment.NewLine}Please choose from the following choices: {Environment.NewLine}{appendedAnswers}");
+            }
         }
 
         public static async Task SubmitApplication(CommandContext ctx)
@@ -90,8 +96,13 @@ namespace AegisBotV2.Services
             }
             await tempChannel.SendMessageAsync(app.GetApplication(true));
             await tempChannel.SendMessageAsync(
-                $"To approve/deny/investigate further this application type !approve/!deny/!investigate (ApplicationID) without the parentheses." +
+                $"To approve/deny/investigate further this application type '@Aegis Approve/Deny/Investigate (ApplicationID)' without the quotes or the parentheses. (note the ApplicationID can be found at the top of the Application)" +
                 "This will message the user explaining the current status of their application.");
+        }
+
+        internal static Task ApproveApplication(CommandContext context)
+        {
+            throw new NotImplementedException();
         }
 
         public static List<Application> GetApplicationsForChannel(ulong channelId, List<Application.State> state)

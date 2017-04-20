@@ -11,12 +11,13 @@ namespace AegisBotV2.Implementations
         public string Question { get; set; }
         public string Answer { get; set; }
         public int QuestionID { get; set; }
-
-        public QA(int questionID, string question, string answer = null)
+        public List<string> ValidAnswers { get; set; }
+        public QA(int questionID, string question, List<string> validAnswers = null,  string answer = null)
         {
             QuestionID = questionID;
             Question = question;
             Answer = answer;
+            ValidAnswers = validAnswers ?? new List<string>();
         }
     }
 }

@@ -67,25 +67,26 @@ namespace AegisBotV2.Implementations
 
             if (!QAs.Any())
             {
-                QAs.Add(new QA(1, "Your Real Name*"));
-                QAs.Add(new QA(2, "Preferred Name/Handle"));
-                QAs.Add(new QA(3, "Date of Birth"));
-                QAs.Add(new QA(4, "Gender"));
-                QAs.Add(new QA(5, "Are you a decent person?"));
-                QAs.Add(new QA(6, "You wanna meet some cool people to play games with?"));
-                QAs.Add(new QA(7, "Preferred Gaming Platform"));
-                QAs.Add(new QA(8, "List Some Favorite Games"));
-                QAs.Add(new QA(9, "Do you play Rocket League?"));
-                QAs.Add(new QA(10, "What is your Standard Rank (3v3)? (Type \"N/A\" if you DONT play Rocket League)"));
-                QAs.Add(new QA(11, "Doubles Rank (2v2)? (Type \"N/A\" if you DONT play Rocket League)"));
-                QAs.Add(new QA(12, "Are you interested in playing Rocket League at a Competitive Level (Semi-Pro/Pro)?"));
-                QAs.Add(new QA(13, "Have you participated in a \"Legitimate\" Rocket League Tournament before? (ESL, ModkIT, RLCS)?"));
-                QAs.Add(new QA(14, "SteamCommunity URL*"));
-                QAs.Add(new QA(15, "Battle.NET BattleTag*"));
-                QAs.Add(new QA(16, "Origin ID*"));
-                QAs.Add(new QA(17, "LoL Username"));
-                QAs.Add(new QA(18, "Do you acknowledge that if you're a douche, we can kick/ban you with or without prior warning?"));
-                QAs.Add(new QA(19, "Anyting else you wanna say or add?"));
+                QAs.Add(new QA(1, "Steam Name/GT/PSN", null, null));
+                QAs.Add(new QA(2, "Current Highest Rank", new List<string>
+                {
+                    "Grand Champion",
+                    "Champion 3", "Champion 2", "Champion 1",
+                    "Diamond 3", "Diamond 2", "Diamond 1",
+                    "Platinum 3", "Platinum 2", "Platinum 1",
+                    "Gold 3", "Gold 2", "Gold 1",
+                    "Silver 3", "Silver 2", "Silver 1",
+                    "Bronze 3", "Bronze 2", "Bronze 1",
+                    "Unranked"
+                }, null));
+                QAs.Add(new QA(3, "Preferred Region", new List<string>
+                {
+                    "NA West", "NA East", "EU", "Asia", "Oceania", "Middle East", "SAM"
+                }));
+                QAs.Add(new QA(4, "Preferred Platform", new List<string>
+                {
+                    "Steam", "PS4", "Xbox"
+                }));
                 SaveQuestions();
             }
         }
