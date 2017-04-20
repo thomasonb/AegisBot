@@ -100,9 +100,24 @@ namespace AegisBotV2.Services
                 "This will message the user explaining the current status of their application.");
         }
 
-        internal static Task ApproveApplication(CommandContext context)
+        public static async Task ApproveApplication(CommandContext ctx, string applicationID)
         {
-            throw new NotImplementedException();
+            Application app = GetApplicationByID(applicationID);
+            if (app != null)
+            {
+                app.CurrentState = Application.State.Approved;
+                await app.SaveApplication(saveDir);
+                IGuildUser applicant = await ctx.Guild.GetUserAsync(app.UserID);
+                //User applicant = ctx.Client.GetGuildsAsync().Result.First(x => x.Name == "ybadragon")
+                //    .Users.FirstOrDefault(x => x.Id == app.UserID);
+                if (applicant != null)
+                {
+                    //await applicant.AddRoles(applicant.Client.Servers.First(y => y.Name == "ybadragon").Roles.First(y => y.Name == "Approved"));
+                    await applicant.AddRolesAsync(ctx.Guild.Roles.Where(x => x.Name == app.QAs.First(y => y.ValidAnswers.Contains("Unranked")).Answer));
+                    await ctx.Channel.SendMessageAsync($"{ctx.User.Username} has approved {applicant.Username}'s application. {applicant.Username} has been notified about the status change of their application.");
+                    await applicant.GetDMChannelAsync().Result.SendMessageAsync($"Congratulations {applicant.Username}! Your application has been approved by a Mod.");
+                }
+            }
         }
 
         public static List<Application> GetApplicationsForChannel(ulong channelId, List<Application.State> state)
@@ -118,6 +133,21 @@ namespace AegisBotV2.Services
             });
 
             return Applications.Where(x => state.Contains(x.CurrentState) || state.Contains(Application.State.Any)).ToList();
+        }
+
+        private static Application GetApplicationByID(string applicationId)
+        {
+            List<string> ApplicationFiles = Directory.GetFiles(saveDir).ToList();
+            List<Application> Applications = new List<Application>();
+            ApplicationFiles.ForEach(x =>
+            {
+                using (StreamReader sr = new StreamReader(new FileStream(x, FileMode.Open)))
+                {
+                    Applications.Add(JsonConvert.DeserializeObject<Application>(sr.ReadToEnd()));
+                }
+            });
+
+            return Applications.FirstOrDefault(x => x.ApplicationID == applicationId);
         }
     }
 }

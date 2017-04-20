@@ -86,7 +86,7 @@ namespace AegisBotV2.Modules
         [Command("Approve", RunMode = RunMode.Async), Summary("Approves the users application"), RequireElevatedUserPrecondition]
         public async Task Approve(string ApplicationID)
         {
-            await ApplicationService.ApproveApplication(Context);
+            await ApplicationService.ApproveApplication(Context, ApplicationID);
         }
     }
 }
