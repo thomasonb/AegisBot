@@ -122,6 +122,7 @@ namespace AegisBotV2.Services
             else
             {
                 await ctx.Channel.SendMessageAsync($"{applicationID} is not a valid application.");
+                //delete the application message if it no longer exists
             }
         }
 
