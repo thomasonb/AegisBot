@@ -112,8 +112,9 @@ namespace AegisBotV2.Services
                 //    .Users.FirstOrDefault(x => x.Id == app.UserID);
                 if (applicant != null)
                 {
-                    //await applicant.AddRoles(applicant.Client.Servers.First(y => y.Name == "ybadragon").Roles.First(y => y.Name == "Approved"));
-                    await applicant.AddRolesAsync(ctx.Guild.Roles.Where(x => x.Name == app.QAs.First(y => y.ValidAnswers.Contains("Unranked")).Answer));
+                    //add applicant to all roles associated with their answers
+                    await applicant.AddRolesAsync(ctx.Guild.Roles.Where(x => app.QAs.Where(y => y.SetRoleToAnswer == true).Select(y => y.Answer.ToLower()).Contains(x.Name.ToLower())));
+                    //await applicant.AddRolesAsync(ctx.Guild.Roles.Intersect(app.QAs.Where(y => y.SetRoleToAnswer).Select(y => y.Answer).ToList()));
                     await ctx.Channel.SendMessageAsync($"{ctx.User.Username} has approved {applicant.Username}'s application. {applicant.Username} has been notified about the status change of their application.");
                     await applicant.GetDMChannelAsync().Result.SendMessageAsync($"Congratulations {applicant.Username}! Your application has been approved by a Mod.");
                 }

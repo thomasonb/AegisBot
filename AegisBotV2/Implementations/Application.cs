@@ -67,8 +67,8 @@ namespace AegisBotV2.Implementations
 
             if (!QAs.Any())
             {
-                QAs.Add(new QA(1, "Steam Name/GT/PSN", null, null));
-                QAs.Add(new QA(2, "Current Highest Rank", new List<string>
+                QAs.Add(new QA(1, "Steam Name/GT/PSN", false, null, null));
+                QAs.Add(new QA(2, "Current Highest Rank", true, new List<string>
                 {
                     "Grand Champion",
                     "Champion 3", "Champion 2", "Champion 1",
@@ -79,11 +79,11 @@ namespace AegisBotV2.Implementations
                     "Bronze 3", "Bronze 2", "Bronze 1",
                     "Unranked"
                 }, null));
-                QAs.Add(new QA(3, "Preferred Region", new List<string>
+                QAs.Add(new QA(3, "Preferred Region", true, new List<string>
                 {
                     "NA West", "NA East", "EU", "Asia", "Oceania", "Middle East", "SAM"
                 }));
-                QAs.Add(new QA(4, "Preferred Platform", new List<string>
+                QAs.Add(new QA(4, "Preferred Platform", true, new List<string>
                 {
                     "Steam", "PS4", "Xbox"
                 }));
@@ -101,15 +101,6 @@ namespace AegisBotV2.Implementations
             {
                 await sw.WriteAsync(JsonConvert.SerializeObject(QAs, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Formatting = Formatting.Indented }));
             }
-        }
-
-        public Task AddQuestion(string Question)
-        {
-            int? LastID = QAs.LastOrDefault()?.QuestionID;
-            LastID = LastID == null ? 1 : LastID + 1;
-            QAs.Add(new QA((int)LastID, Question));
-            SaveQuestions();
-            return Task.FromResult<object>(null);
         }
 
         public async Task SaveApplication(string solutionPath)
