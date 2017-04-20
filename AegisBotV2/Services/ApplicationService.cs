@@ -119,6 +119,10 @@ namespace AegisBotV2.Services
                     await applicant.GetDMChannelAsync().Result.SendMessageAsync($"Congratulations {applicant.Username}! Your application has been approved by a Mod.");
                 }
             }
+            else
+            {
+                await ctx.Channel.SendMessageAsync($"{applicationID} is not a valid application.");
+            }
         }
 
         public static List<Application> GetApplicationsForChannel(ulong channelId, List<Application.State> state)
