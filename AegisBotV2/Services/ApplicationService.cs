@@ -18,7 +18,7 @@ namespace AegisBotV2.Services
     {
         public static string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.FullName + "\\Applications";
 
-        public static async Task SendApplication(string message, IUser user)
+        public static async Task SendApplication(IUser user)
         {
             Application app = new Application(user.Id, true)
             {
@@ -100,6 +100,45 @@ namespace AegisBotV2.Services
                 "This will message the user explaining the current status of their application.");
         }
 
+        public static async Task DenyApplication(CommandContext ctx, string applicationID)
+        {
+            Application app = GetApplicationByID(applicationID);
+            if (app != null)
+            {
+                app.CurrentState = Application.State.Denied;
+                await app.SaveApplication(saveDir);
+                IGuildUser applicant = await ctx.Guild.GetUserAsync(app.UserID);
+                IDMChannel tempChannel = await applicant.CreateDMChannelAsync();
+                await ctx.Channel.SendMessageAsync($"{ctx.User.Username} has denied {applicant.Username}'s application. {applicant.Username} has been notified about the status change of their application.");
+                await tempChannel.SendMessageAsync($"Unfortunately {applicant.Username} Your application has been denied by a Mod.");
+            }
+            else
+            {
+                await ctx.Channel.SendMessageAsync($"{applicationID} is not a valid application.");
+                //delete the application message if it no longer exists
+            }
+        }
+
+        public static async Task InvestigateApplication(CommandContext ctx, string applicationID)
+        {
+            Application app = GetApplicationByID(applicationID);
+            if (app != null)
+            {
+                app.CurrentState = Application.State.Denied;
+                await app.SaveApplication(saveDir);
+                IGuildUser applicant = await ctx.Guild.GetUserAsync(app.UserID);
+                IDMChannel tempChannel = await applicant.CreateDMChannelAsync();
+                await ctx.Channel.SendMessageAsync($"{ctx.User.Username} has marked {applicant.Username}'s application for further investigation. {applicant.Username} has been notified about the status change of their application.");
+
+                await tempChannel.SendMessageAsync($"Your application has been marked for investigation by a Mod.");
+            }
+            else
+            {
+                await ctx.Channel.SendMessageAsync($"{applicationID} is not a valid application.");
+                //delete the application message if it no longer exists
+            }
+        }
+
         public static async Task ApproveApplication(CommandContext ctx, string applicationID)
         {
             Application app = GetApplicationByID(applicationID);
@@ -116,7 +155,8 @@ namespace AegisBotV2.Services
                     await applicant.AddRolesAsync(ctx.Guild.Roles.Where(x => app.QAs.Where(y => y.SetRoleToAnswer == true).Select(y => y.Answer.ToLower()).Contains(x.Name.ToLower())));
                     //await applicant.AddRolesAsync(ctx.Guild.Roles.Intersect(app.QAs.Where(y => y.SetRoleToAnswer).Select(y => y.Answer).ToList()));
                     await ctx.Channel.SendMessageAsync($"{ctx.User.Username} has approved {applicant.Username}'s application. {applicant.Username} has been notified about the status change of their application.");
-                    await applicant.GetDMChannelAsync().Result.SendMessageAsync($"Congratulations {applicant.Username}! Your application has been approved by a Mod.");
+                    IDMChannel tempChannel = await applicant.CreateDMChannelAsync();
+                    await tempChannel.SendMessageAsync($"Congratulations {applicant.Username}! Your application has been approved by a Mod.");
                 }
             }
             else

@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using AegisBotV2.Modules;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
@@ -32,16 +33,38 @@ namespace AegisBotV2
 
             await InstallCommands();
 
+            client.UserJoined += UserJoined;
+            //client.Ready += LoggedIn;
+
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
 
             await Task.Delay(-1);
         }
 
+        private async Task LoggedIn()
+        {
+            await UserJoined(client.Guilds.First().Users.First(x => x.Username == "ybadragon"));
+        }
+
         public async Task InstallCommands()
         {
             client.MessageReceived += MessageReceived;
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
+        }
+
+        private async Task UserJoined(SocketGuildUser user)
+        {
+            IDMChannel tempChannel = await user.CreateDMChannelAsync();
+            IUserMessage msg = await tempChannel.SendMessageAsync("Initializing Message Connection");
+            ICommandContext ctx = new CommandContext(client, msg);
+            CommandInfo cmd = commands.Commands.FirstOrDefault(x => x.Name == "Apply");
+            var result = await cmd.ExecuteAsync(ctx, new List<object>(), new List<object>(), map);
+            if (!result.IsSuccess)
+            {
+                await ctx.Channel.SendMessageAsync(result.ErrorReason);
+            }
+            await msg.DeleteAsync();
         }
 
         private async Task MessageReceived(SocketMessage msg)
