@@ -39,5 +39,28 @@ namespace AegisBotV2.Preconditions
             }
             return Task.FromResult(ResponsePreconditionResult.FromError($"{_message.Content} is not a Valid Answer"));
         }
+
+        public Task<ResponsePreconditionResult> CheckPermissions(string commandName)
+        {
+            List<string> Mentions = (_message as SocketUserMessage).MentionedUsers.Select(x => x.Mention.Replace("!", "").ToString()).ToList();
+            string CleanMessage = "";
+            Mentions.ForEach(x =>
+            {
+                CleanMessage = _message.Content.Replace(x, "");
+            });
+            CleanMessage = CleanMessage.Replace(commandName, "").Trim();
+            if (!_app.QAs[_app.CurrentQuestionID].ValidAnswers.Any())
+            {
+                return Task.FromResult(ResponsePreconditionResult.FromSuccess());
+            }
+            else
+            {
+                if (_app.QAs[_app.CurrentQuestionID].ValidAnswers.Any(x => x.ToLower() == CleanMessage.ToLower()))
+                {
+                    return Task.FromResult(ResponsePreconditionResult.FromSuccess());
+                }
+            }
+            return Task.FromResult(ResponsePreconditionResult.FromError($"{CleanMessage} is not a Valid Answer"));
+        }
     }
 }

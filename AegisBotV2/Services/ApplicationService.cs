@@ -87,8 +87,8 @@ namespace AegisBotV2.Services
                 tempChannel = await tempGuild?.CreateTextChannelAsync("applications");
                 //owner, admin, moderator, moderator in training
                 OverwritePermissions perms = new OverwritePermissions(readMessageHistory: PermValue.Allow, sendMessages: PermValue.Allow, readMessages: PermValue.Allow);
-                List<string> RoleNames = new List<string>() { "Owner", "Admin", "Moderator", "Moderator in training", "Aegis", "Developer", "Mods" };
-                IReadOnlyCollection<IRole> roles = tempGuild?.Roles.Where(x => RoleNames.Contains(x.Name)).ToList();
+                List<string> RoleNames = new List<string>() { "owner", "admin", "moderator", "moderator in training", "aegis", "developer", "mods" };
+                IReadOnlyCollection<IRole> roles = tempGuild?.Roles.Where(x => RoleNames.Contains(x.Name.ToLower())).ToList();
                 roles.ToList().ForEach(x =>
                 {
                     tempChannel.AddPermissionOverwriteAsync(x, perms);
@@ -166,7 +166,7 @@ namespace AegisBotV2.Services
             }
         }
 
-        public static List<Application> GetApplicationsForChannel(ulong channelId, List<Application.State> state)
+        private static List<Application> GetApplications()
         {
             List<string> ApplicationFiles = Directory.GetFiles(saveDir).ToList();
             List<Application> Applications = new List<Application>();
@@ -177,22 +177,24 @@ namespace AegisBotV2.Services
                     Applications.Add(JsonConvert.DeserializeObject<Application>(sr.ReadToEnd()));
                 }
             });
+            return Applications;
+        }
 
+        public static List<Application> GetApplicationsForChannel(ulong channelId, List<Application.State> state)
+        {
+            List<Application> Applications = GetApplications();
             return Applications.Where(x => state.Contains(x.CurrentState) || state.Contains(Application.State.Any)).ToList();
         }
 
-        private static Application GetApplicationByID(string applicationId)
+        public static Application GetApplicationByUser(ulong userId)
         {
-            List<string> ApplicationFiles = Directory.GetFiles(saveDir).ToList();
-            List<Application> Applications = new List<Application>();
-            ApplicationFiles.ForEach(x =>
-            {
-                using (StreamReader sr = new StreamReader(new FileStream(x, FileMode.Open)))
-                {
-                    Applications.Add(JsonConvert.DeserializeObject<Application>(sr.ReadToEnd()));
-                }
-            });
+            List<Application> Applications = GetApplications();
+            return Applications.FirstOrDefault(x => x.UserID == userId);
+        }
 
+        public static Application GetApplicationByID(string applicationId)
+        {
+            List<Application> Applications = GetApplications();
             return Applications.FirstOrDefault(x => x.ApplicationID == applicationId);
         }
     }

@@ -67,7 +67,7 @@ namespace AegisBotV2.Implementations
 
             if (!QAs.Any())
             {
-                QAs.Add(new QA(1, "Steam Name/GT/PSN", false, null, null));
+                QAs.Add(new QA(1, "Steam Name/GT/PSN", false, null, null, QuestionRoleType.None));
                 QAs.Add(new QA(2, "Current Highest Rank", true, new List<string>
                 {
                     "Grand Champion",
@@ -78,15 +78,15 @@ namespace AegisBotV2.Implementations
                     "Silver 3", "Silver 2", "Silver 1",
                     "Bronze 3", "Bronze 2", "Bronze 1",
                     "Unranked"
-                }, null));
+                }, null, QuestionRoleType.Rank));
                 QAs.Add(new QA(3, "Preferred Region", true, new List<string>
                 {
                     "NA West", "NA East", "EU", "Asia", "Oceania", "Middle East", "SAM"
-                }));
+                }, null, QuestionRoleType.Region));
                 QAs.Add(new QA(4, "Preferred Platform", true, new List<string>
                 {
                     "Steam", "PS4", "Xbox"
-                }));
+                }, null, QuestionRoleType.Platform));
                 SaveQuestions();
             }
         }
