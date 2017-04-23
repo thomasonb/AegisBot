@@ -16,7 +16,7 @@ namespace AegisBotV2.Services
 {
     public static class ApplicationService
     {
-        public static string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.FullName + "\\Applications";
+        public static string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.Parent?.FullName + "\\Applications";
 
         public static async Task SendApplication(IUser user)
         {

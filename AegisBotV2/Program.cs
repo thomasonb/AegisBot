@@ -17,7 +17,7 @@ namespace AegisBotV2
         public static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
         public DependencyMap map = new DependencyMap();
         public CommandService commands = new CommandService();
-        private string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.FullName;
+        private string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.Parent?.FullName;
 
 
         public async Task MainAsync()

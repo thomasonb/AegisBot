@@ -33,7 +33,7 @@ namespace AegisBotV2.Implementations
         [JsonProperty(PropertyName = "CreateDate")]
         private DateTime CreateDate;
 
-        private static string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.FullName + "\\ApplicationConfig";
+        private static string saveDir = new DirectoryInfo(Assembly.GetEntryAssembly().Location).Parent?.Parent?.Parent?.Parent?.Parent?.FullName + "\\ApplicationConfig";
 
 
         public string GetStateDescription()
