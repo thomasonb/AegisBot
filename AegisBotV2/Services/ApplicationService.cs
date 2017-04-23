@@ -33,7 +33,7 @@ namespace AegisBotV2.Services
             await tempChannel.SendMessageAsync(app.GetApplication(false));
 
             await tempChannel.SendMessageAsync($"Hello {user.Username}, Welcome to Libertas RL! Please complete the application above to make it easier for you to find teammates!{Environment.NewLine}{Environment.NewLine}" +
-                                 $"Type '@Aegis Begin' without the quotes whenever you are ready to begin the application process. At the end you will be able to review the application and make changes if necessary");
+                                 $"Type '@Libertas Begin' without the quotes whenever you are ready to begin the application process. At the end you will be able to review the application and make changes if necessary");
         }
 
         public static async Task BeginApplication(CommandContext ctx)
@@ -52,8 +52,8 @@ namespace AegisBotV2.Services
             await app.SaveApplication(saveDir);
             await ctx.Channel.SendMessageAsync(app.GetApplication(false));
             await ctx.Channel.SendMessageAsync(
-                                $"Above is the application you are about to send. Please review your answers and change any you want by typing '@Aegis Change (question number)' without the quotes or the parentheses.{Environment.NewLine}{Environment.NewLine}" +
-                                $"Once you are done making your modifications, please type '@Aegis Submit' without the quotes to submit your application.");
+                                $"Above is the application you are about to send. Please review your answers and change any you want by typing '@Libertas Change (question number)' without the quotes or the parentheses.{Environment.NewLine}{Environment.NewLine}" +
+                                $"Once you are done making your modifications, please type '@Libertas Submit' without the quotes to submit your application.");
 
         }
 
@@ -87,7 +87,7 @@ namespace AegisBotV2.Services
                 tempChannel = await tempGuild?.CreateTextChannelAsync("applications");
                 //owner, admin, moderator, moderator in training
                 OverwritePermissions perms = new OverwritePermissions(readMessageHistory: PermValue.Allow, sendMessages: PermValue.Allow, readMessages: PermValue.Allow);
-                List<string> RoleNames = new List<string>() { "owner", "admin", "moderator", "moderator in training", "aegis", "developer", "mods" };
+                List<string> RoleNames = new List<string>() { "owner", "admin", "moderator", "moderator in training", "libertas", "developer", "mods" };
                 IReadOnlyCollection<IRole> roles = tempGuild?.Roles.Where(x => RoleNames.Contains(x.Name.ToLower())).ToList();
                 roles.ToList().ForEach(x =>
                 {
@@ -96,7 +96,7 @@ namespace AegisBotV2.Services
             }
             await tempChannel.SendMessageAsync(app.GetApplication(true));
             await tempChannel.SendMessageAsync(
-                $"To approve/deny/investigate further this application type '@Aegis Approve/Deny/Investigate (ApplicationID)' without the quotes or the parentheses. (note the ApplicationID can be found at the top of the Application)" +
+                $"To approve/deny/investigate further this application type '@Libertas Approve/Deny/Investigate (ApplicationID)' without the quotes or the parentheses. (note the ApplicationID can be found at the top of the Application)" +
                 "This will message the user explaining the current status of their application.");
         }
 

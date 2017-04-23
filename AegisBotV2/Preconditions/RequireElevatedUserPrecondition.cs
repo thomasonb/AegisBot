@@ -12,7 +12,7 @@ namespace AegisBotV2.Preconditions
     {
         public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IDependencyMap map)
         {
-            List<string> RoleNames = new List<string>() { "owner", "admin", "moderator", "moderator in training", "aegis", "developer", "mods" };
+            List<string> RoleNames = new List<string>() { "owner", "admin", "moderator", "moderator in training", "libertas", "developer", "mods" };
             IEnumerable<ulong> roleids = context.Guild.Roles.Where(x => RoleNames.Contains(x.Name.ToLower())).Select(x => x.Id);
             if ((context.User as IGuildUser).RoleIds.Intersect(roleids).Any())
             {
