@@ -78,7 +78,7 @@ namespace AegisBotV2.Services
             await ctx.Channel.SendMessageAsync(
                 "Your application has been submitted for approval. You will be notified when it's status has been updated.");
 
-            IGuild tempGuild = ctx.Client.GetGuildsAsync().Result.FirstOrDefault(x => x.Name == "ybadragon");
+            IGuild tempGuild = ctx.Guild;
             IReadOnlyCollection<IGuildChannel> tempChannels = await tempGuild?.GetChannelsAsync();
             ITextChannel tempChannel = tempChannels.FirstOrDefault(x => x.Name == "applications") as ITextChannel;
             if (tempChannel == null)
